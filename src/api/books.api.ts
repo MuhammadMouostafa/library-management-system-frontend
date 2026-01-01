@@ -6,8 +6,8 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export const getBooks = async (page = 1, limit = 10) => {
-  const res = await api.get(`/books?page=${page}&limit=${limit}`);
+export const getBooksByCategory = async (categoryId = 0, page = 1, limit = 10) => {
+  const res = await api.get(`/books/category?categoryId=${categoryId}&page=${page}&limit=${limit}`);
   return res.data;
 };
 

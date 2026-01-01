@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getCategories,
   createCategory,
@@ -12,6 +13,8 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selected, setSelected] = useState<Category | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const navigate = useNavigate();
+
 
   const loadCategories = async () => {
     const data = await getCategories();
@@ -69,24 +72,27 @@ export default function CategoriesPage() {
         {categories.map((cat) => (
           <div
             key={cat.id}
-            className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition"
+            onClick={() => navigate(`/categories/${cat.id}/books`)}
+            className="bg-white rounded-xl shadow p-4 hover:shadow-lg hover:cursor-pointer transition"
           >
             <h2 className="text-xl font-semibold">{cat.name}</h2>
             <p className="text-sm text-gray-500">Order: {cat.order}</p>
 
             <div className="flex gap-2 mt-4">
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setSelected(cat);
                   setShowForm(true);
                 }}
-                className="px-3 py-1 border rounded"
               >
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(cat.id)}
-                className="px-3 py-1 border border-red-500 text-red-600 rounded"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(cat.id);
+                }}
               >
                 Delete
               </button>

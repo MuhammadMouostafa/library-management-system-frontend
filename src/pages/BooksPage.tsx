@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
-  getBooks,
+  getBooksByCategory,
   createBook,
   updateBook,
   deleteBook,
@@ -12,15 +13,27 @@ export default function BooksPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const { categoryId } = useParams();
+  const navigate = useNavigate();
 
-  const loadBooks = async () => {
-    const res = await getBooks();
-    setBooks(res.books ?? res);
-  };
 
   useEffect(() => {
-    loadBooks();
-  }, []);
+    if (!categoryId) return;
+
+    const fetchBooks = async () => {
+      try {
+        const data = await getBooksByCategory(Number(categoryId));
+        setBooks(data.books ?? data);
+      } catch (err) {
+        console.error("API ERROR:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, [categoryId]);
+
 
   const handleAdd = async (data: Omit<Book, "id">) => {
     await createBook(data);
@@ -45,6 +58,12 @@ export default function BooksPage() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">📚 Books</h1>
+        <button
+          onClick={() => navigate("/")}
+          className="mb-4 text-blue-600 hover:underline"
+        >
+          ← Back to Categories
+        </button>
         <button
           className="bg-green-600 text-white px-4 py-2 rounded"
           onClick={() => setModalOpen(true)}

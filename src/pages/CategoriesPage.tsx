@@ -72,7 +72,7 @@ export default function CategoriesPage() {
         {categories.map((cat) => (
           <div
             key={cat.id}
-            onClick={() => navigate(`/categories/${cat.id}/books`)}
+            onClick={() => navigate(`/admin/categories/${cat.id}/books`)}
             className="bg-white rounded-xl shadow p-4 hover:shadow-lg hover:cursor-pointer transition"
           >
             <h2 className="text-xl font-semibold">{cat.name}</h2>

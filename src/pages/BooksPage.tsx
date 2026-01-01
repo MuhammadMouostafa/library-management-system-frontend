@@ -59,7 +59,7 @@ export default function BooksPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">📚 Books</h1>
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/admin/categories")}
           className="mb-4 text-blue-600 hover:underline"
         >
           ← Back to Categories

@@ -1,56 +1,58 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import CategoryBar from "../components/CategoryBar";
+import CategoriesBar from "../components/CategoriesBar";
 import PublicBooksGrid from "../components/PublicBooksGrid";
 import { getCategories } from "../api/categories.api";
-import { getBooksByCategory } from "../api/books.api";
-import type { Category } from "../types/category";
-import type { Book } from "../types/book";
+import { getBooksByCategory, searchBooks } from "../api/books.api";
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function HomePage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [books, setBooks] = useState([]);
+  const [search, setSearch] = useState("");
 
+  const debouncedSearch = useDebounce(search);
+
+  // Load categories
   useEffect(() => {
-    const init = async () => {
-      const cats = await getCategories();
-      setCategories(cats);
-
-      if (cats.length > 0) {
-        setSelectedCategory(cats[0].id);
-      }
-    };
-
-    init();
+    getCategories().then(res => {
+      setCategories(res);
+      if (res.length) setSelectedCategory(res[0].id);
+    });
   }, []);
 
+  // Search OR category books
   useEffect(() => {
-    if (!selectedCategory) return;
-
-    const loadBooks = async () => {
-      setLoading(true);
-      const data = await getBooksByCategory(selectedCategory);
-      setBooks(data.books ?? data);
-      setLoading(false);
-    };
-
-    loadBooks();
-  }, [selectedCategory]);
+    if (debouncedSearch.trim()) {
+      searchBooks(debouncedSearch).then(res => {
+        setBooks(res.books ?? res);
+      });
+    } else if (selectedCategory) {
+      getBooksByCategory(selectedCategory).then(res => {
+        setBooks(res.books ?? res);
+      });
+    }
+  }, [debouncedSearch, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
-      <CategoryBar
-        categories={categories}
-        selectedId={selectedCategory}
-        onSelect={setSelectedCategory}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <Navbar search={search} onSearchChange={setSearch} />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {loading ? (
-          <p className="text-center">Loading books...</p>
+      {/* Hide categories when searching */}
+      {!search && (
+        <CategoriesBar
+          categories={categories}
+          selectedId={selectedCategory}
+          onSelect={setSelectedCategory}
+        />
+      )}
+
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {books.length === 0 ? (
+          <p className="text-center text-gray-500">
+            No books found 📭
+          </p>
         ) : (
           <PublicBooksGrid books={books} />
         )}

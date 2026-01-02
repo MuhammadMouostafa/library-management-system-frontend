@@ -1,36 +1,37 @@
-export default function Navbar() {
-  return (
-    <nav className="bg-white shadow sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        
-        {/* Left */}
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-blue-700">
-            📚 EgyLibrary
-          </h1>
+interface Props {
+  search: string;
+  onSearchChange: (value: string) => void;
+}
 
-          <a
-            href="/admin/categories"
-            className="hidden sm:inline-block text-sm font-medium text-gray-600 hover:text-blue-600"
-          >
-            Categories
-          </a>
+export default function Navbar({ search, onSearchChange }: Props) {
+  return (
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg" />
+          <span className="text-xl font-bold">EgyLibrary</span>
         </div>
 
-        {/* Middle - Search (UI only) */}
-        <div className="flex-1 hidden md:flex justify-center">
+        {/* Search */}
+        <div className="hidden md:block w-[420px]">
           <input
-            type="text"
-            placeholder="Search for books..."
-            className="w-full max-w-md px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search by title, author, ISBN..."
+            className="
+              w-full px-4 py-2 rounded-full border
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+            "
           />
         </div>
 
-        {/* Right */}
-        <div className="text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-600">
+        {/* Login */}
+        <span className="text-sm font-medium hover:text-indigo-600 cursor-pointer">
           Login
-        </div>
+        </span>
       </div>
-    </nav>
+    </header>
   );
 }

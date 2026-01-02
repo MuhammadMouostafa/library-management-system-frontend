@@ -11,8 +11,8 @@ export const getBooksByCategory = async (categoryId = 0, page = 1, limit = 10) =
   return res.data;
 };
 
-export const searchBooks = async (q: string, page = 1) => {
-  const res = await api.get(`/books/search?q=${q}&page=${page}`);
+export const searchBooks = async (q: string) => {
+  const res = await api.get(`/books/search?q=${q}`);
   return res.data;
 };
 

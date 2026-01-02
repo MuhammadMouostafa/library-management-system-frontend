@@ -5,6 +5,7 @@ import PublicBooksGrid from "../components/PublicBooksGrid";
 import { getCategories } from "../api/categories.api";
 import { getBooksByCategory, searchBooks } from "../api/books.api";
 import { useDebounce } from "../hooks/useDebounce";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
   const [categories, setCategories] = useState([]);
@@ -38,6 +39,59 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar search={search} onSearchChange={setSearch} />
+
+      <section className="max-w-7xl mx-auto px-6 mt-12">
+        <h2 className="text-2xl font-bold mb-6">
+          Library Management
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          {/* Admin Quick Actions */}
+          <Link
+            to="/admin/categories"
+            className="group bg-white rounded-xl shadow p-6 hover:shadow-lg transition"
+          >
+            <div className="text-4xl mb-3">📚</div>
+            <h3 className="text-lg font-semibold group-hover:text-amber-600">
+              Manage Categories
+            </h3>
+            <p className="text-gray-600 mt-1">
+              Create, edit and organize book categories
+            </p>
+          </Link>
+
+          {/* Borrowers */}
+          <Link
+            to="/admin/borrowers"
+            className="group bg-white rounded-xl shadow p-6 hover:shadow-lg transition"
+          >
+            <div className="text-4xl mb-3">🧑‍💼</div>
+            <h3 className="text-lg font-semibold group-hover:text-amber-600">
+              Manage Borrowers
+            </h3>
+            <p className="text-gray-600 mt-1">
+              Add, update and manage library members
+            </p>
+          </Link>
+
+          {/* Books (optional but recommended) */}
+          <Link
+            to="/admin/books"
+            className="group bg-white rounded-xl shadow p-6 hover:shadow-lg transition"
+          >
+            <div className="text-4xl mb-3">📖</div>
+            <h3 className="text-lg font-semibold group-hover:text-amber-600">
+              Manage Books
+            </h3>
+            <p className="text-gray-600 mt-1">
+              Control inventory and book details
+            </p>
+          </Link>
+
+        </div>
+      </section>
+
 
       {/* Hide categories when searching */}
       {!search && (

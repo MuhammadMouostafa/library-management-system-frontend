@@ -16,6 +16,8 @@ const emptyBook = {
   shelfLocation: "",
   imageURL: "",
   categoryId: 0,
+  activeBorrows: 0,
+  availableQuantity: 0
 };
 
 export default function BookModal({
@@ -36,6 +38,8 @@ export default function BookModal({
         shelfLocation: initialData.shelfLocation,
         imageURL: initialData.imageURL,
         categoryId: initialData.categoryId,
+        activeBorrows: initialData.activeBorrows,
+        availableQuantity: initialData.availableQuantity
         });
     } else {
         setForm(emptyBook);

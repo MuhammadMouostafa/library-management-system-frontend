@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import CategoriesBar from "../components/CategoriesBar";
 import PublicBooksGrid from "../components/PublicBooksGrid";
@@ -23,18 +23,40 @@ export default function HomePage() {
     });
   }, []);
 
+  const resolveBooks = useCallback(async () => {
+    if (debouncedSearch.trim()) {
+      const res = await searchBooks(debouncedSearch);
+      return res.books ?? res;
+    }
+    else if (selectedCategory) {
+      const res = await getBooksByCategory(selectedCategory);
+      return res.books ?? res;
+    }
+
+    return [];
+  }, [debouncedSearch, selectedCategory]);
+
   // Search OR category books
   useEffect(() => {
-    if (debouncedSearch.trim()) {
-      searchBooks(debouncedSearch).then(res => {
-        setBooks(res.books ?? res);
-      });
-    } else if (selectedCategory) {
-      getBooksByCategory(selectedCategory).then(res => {
-        setBooks(res.books ?? res);
-      });
-    }
-  }, [debouncedSearch, selectedCategory]);
+    let cancelled = false;
+
+    (async () => {
+      const data = await resolveBooks();
+      if (!cancelled) {
+        setBooks(data);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resolveBooks]);
+
+  const refetchBooks = async () => {
+    const data = await resolveBooks();
+    setBooks(data);
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,7 +130,10 @@ export default function HomePage() {
             No books found 📭
           </p>
         ) : (
-          <PublicBooksGrid books={books} />
+          <PublicBooksGrid
+            books={books}
+            onBorrowSuccess={refetchBooks}
+          />
         )}
       </main>
     </div>

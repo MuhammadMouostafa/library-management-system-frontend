@@ -7,4 +7,6 @@ export interface Book {
   quantity: number;
   shelfLocation: string;
   imageURL: string;
+  activeBorrows: number;
+  availableQuantity: number;
 }

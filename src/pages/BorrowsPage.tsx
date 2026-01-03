@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getBorrows } from "../api/borrow.api";
 import type { BorrowState } from "../api/borrow.api";
 import type { BorrowsResponse } from "../types/borrow";
@@ -14,18 +14,36 @@ export default function BorrowsPage() {
   const [data, setData] = useState<BorrowsResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-
-    getBorrows({
-      state,
-      startDate: startDate || undefined,
-      endDate: endDate || undefined,
-      page,
-    })
-      .then(setData)
-      .finally(() => setLoading(false));
+  const loadBorrows = useCallback(async () => {
+      const data = await getBorrows({
+        state,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        page,
+      });
+      return data;
   }, [state, startDate, endDate, page]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const data = await loadBorrows();
+      if (!cancelled) {
+        setData(data);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadBorrows]);
+
+const refetchBorrows = async () => {
+  const data = await loadBorrows();
+    setData(data);
+};
+
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
@@ -44,7 +62,10 @@ export default function BorrowsPage() {
 
       {data && (
         <>
-          <BorrowsTable borrows={data.borrowsPage} />
+          <BorrowsTable
+            borrows={data.borrowsPage}
+            onBookReturned={refetchBorrows}
+          />
 
           {/* Pagination */}
           <div className="flex justify-center gap-3 mt-6">
